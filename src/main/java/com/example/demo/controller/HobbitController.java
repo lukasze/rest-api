@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Hobbit;
+import com.example.demo.service.HobbitService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -10,12 +10,15 @@ import java.util.List;
 @RestController
 public class HobbitController {
 
+    private final HobbitService hobbitService;
+    // nie ma adnotacji @Autowired - jeśli mamy 1 konstruktor
+    // nie potrzebujemy jej dodawać
+    public HobbitController(HobbitService hobbitService) {
+        this.hobbitService = hobbitService;
+    }
+
     @GetMapping("/hobbits")
     public List<Hobbit> findAll(){
-        return List.of(
-                new Hobbit(1L, "Frodo", "Baggins"),
-                new Hobbit(2L, "Bilbo", "Baggins"),
-                new Hobbit(3L, "Penelope", "Tuk")
-        );
+        return hobbitService.findAll();
     }
 }
