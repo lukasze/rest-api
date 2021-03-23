@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +37,7 @@ class HobbitControllerTest {
     @DisplayName("GET /hobbits -> HTTP 200, all hobbits from DB")
     @Test
     @DirtiesContext
+    @WithMockUser
     void givenFullSpringContextAnd2HobbitsInDB_whenGETHobbits_shouldReturn200And2Hobbits() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/hobbits"))
                 .andDo(print())
@@ -53,10 +56,11 @@ class HobbitControllerTest {
         );
     }
 
-    @DisplayName("POST /hobbits {new_hobbit} -> HTTP 200, created Hobbit from DB")
+    @DisplayName("PUT /hobbits {new_hobbit} -> HTTP 200, created Hobbit from DB")
     @Test
     @DirtiesContext
-    void whenPOSTHobbits_shouldReturn200AndNewHobbit() throws Exception {
+    @WithMockUser
+    void whenPUTHobbits_shouldReturn200AndNewHobbit() throws Exception {
 
         var hobbitName = "Bilbo";
         var hobbitLastName = "Tuk";
@@ -68,6 +72,7 @@ class HobbitControllerTest {
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON)
                         .content(hobbitInJSONFormat)
+                        .with(csrf())
                 )
                     .andDo(print())
                     .andExpect(status().isOk())
